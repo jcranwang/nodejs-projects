@@ -41,10 +41,30 @@ const deleteNote = title => {
   } else {
     console.log(chalk.inverse.red("ERROR! Note not found"));
   }
-}
+};
 
+const showNotes = () => {
+  const notes = loadNotes();
+  console.log(chalk.inverse("Titles:"));
+  notes.forEach(note => {
+    console.log(note.title);
+  });
+};
+
+const readNote = title => {
+  const notes = loadNotes();
+  const targetNote = notes.find(note => note.title === title);
+  if (targetNote) {
+    console.log(chalk.inverse(targetNote.title));
+    console.log(targetNote.body);
+  } else {
+    console.log(chalk.inverse.red("ERROR! Note not found!"));
+  }
+};
 
 module.exports = {
   add: addNote,
-  delete: deleteNote
+  delete: deleteNote,
+  show: showNotes,
+  read: readNote
 };

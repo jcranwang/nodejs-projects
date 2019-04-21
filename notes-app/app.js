@@ -3,15 +3,15 @@ const notes = require("./notes");
 
 yargs.command({
   command: "add",
-  description: "add note",
+  describe: "add note",
   builder: {
     title: {
-      description: "note title",
+      describe: "note title",
       demandOption: true,
       type: "string"
     },
     body: {
-      description: "note body",
+      describe: "note body",
       demandOption: true,
       type: "string"
     }
@@ -23,10 +23,10 @@ yargs.command({
 
 yargs.command({
   command: "delete",
-  description: "delete note",
+  describe: "delete note",
   builder: {
     title: {
-      description: "note title",
+      describe: "note title",
       demandOption: true,
       type: "string"
     }
@@ -38,24 +38,24 @@ yargs.command({
 
 yargs.command({
   command: "show",
-  description: "show all notes title",
+  describe: "show all notes title",
   handler() {
-    console.log("Show titles");
+    notes.show();
   }
 });
 
 yargs.command({
   command: "read",
-  description: "read a note's title and body",
+  describe: "read a note's title and body",
   builder: {
     title: {
-      description: "note title",
+      describe: "note title",
       demandOption: true,
       type: "string"
     }
   },
   handler(argv) {
-    console.log(argv.title);
+    notes.read(argv.title);
   }
 });
 
