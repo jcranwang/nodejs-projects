@@ -16,7 +16,9 @@ const geocode = (searchTerm, callback) => {
       callback("location Not Found", undefined);
     } else {
       callback(undefined, {
-        coordinate: response.body.features[0].center
+        longitude: response.body.features[0].center[0],
+        latitude: response.body.features[0].center[1],
+        location: response.body.features[0].place_name
       });
     }
   });

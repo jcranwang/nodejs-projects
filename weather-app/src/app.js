@@ -2,6 +2,8 @@ const express = require("express");
 const app = express();
 const hbs = require("hbs");
 const path = require("path");
+const geocode = require("./utility/geocode");
+const forecast = require("./utility/forecast");
 
 const publicPath = path.join(__dirname, "../public");
 const viewPath = path.join(__dirname, "../templates/views");
@@ -31,6 +33,38 @@ app.get("/help", (req, res) => {
     title: "Weather Forecast",
     name: "Jason"
   });
+});
+
+app.get("/weather", (req, res) => {
+  if (!req.query.address) {
+    return res.send({
+      error: "Please provide an address."
+    });
+  }
+
+  geocode(
+    req.query.address,
+    (error, { latitude, longitude, location } = {}) => {
+      if (error) {
+        return res.send({
+          error: "Please provide an valid address."
+        });
+      }
+
+      forecast(latitude, longitude, (error, { summary, temp } = {}) => {
+        if (error) {
+          return res.send({
+            error: "Please provide an valid address."
+          });
+        }
+        res.send({
+          location,
+          summary,
+          temp
+        });
+      });
+    }
+  );
 });
 
 app.get("/help/*", (req, res) => {
