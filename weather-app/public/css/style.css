@@ -32,6 +32,20 @@ header a {
   text-decoration: none;
 }
 
+input {
+  border: 1px solid #cccccc;
+  padding: 8px;
+}
+
+button {
+  cursor: pointer;
+  border: 1px solid #888888;
+  border-radius: 10px;
+  background: #4c6ca0;
+  color: white;
+  padding: 9px;
+}
+
 .main-content {
   flex-grow: 1;
 }
