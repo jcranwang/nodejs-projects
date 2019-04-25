@@ -13,15 +13,40 @@ app.set("views", viewPath);
 hbs.registerPartials(partialPath);
 
 app.get("", (req, res) => {
-  res.render("");
+  res.render("", {
+    title: "Weather Forecast",
+    name: "Jason"
+  });
 });
 
 app.get("/about", (req, res) => {
-  res.render("about");
+  res.render("about", {
+    title: "Weather Forecast",
+    name: "Jason"
+  });
 });
 
 app.get("/help", (req, res) => {
-  res.render("help");
+  res.render("help", {
+    title: "Weather Forecast",
+    name: "Jason"
+  });
+});
+
+app.get("/help/*", (req, res) => {
+  res.render("404", {
+    title: "Weather Forecast",
+    name: "Jason",
+    error: "Help resource not found"
+  });
+});
+
+app.get("*", (req, res) => {
+  res.render("404", {
+    title: "Weather Forecast",
+    name: "Jason",
+    error: "Page Not Found"
+  });
 });
 
 app.listen("3000", () => {

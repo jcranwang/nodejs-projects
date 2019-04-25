@@ -1,15 +1,21 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
-    <link rel="stylesheet" href="./css/style.css">
-    <title>About</title>
-  </head>
-  <body>
-    <div>
-      <h1>About me</h1>
-    </div>
-  </body>
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+  <link rel="stylesheet" href="./css/style.css">
+  <link rel="icon" href="./image/weather.png">
+  <title>About</title>
+</head>
+
+<body>
+  <div class="main-content">
+    {{>header}}
+    <img src="./image/profile.JPG" alt="profile" class="profile">
+  </div>
+  {{>footer}}
+</body>
+
 </html>
