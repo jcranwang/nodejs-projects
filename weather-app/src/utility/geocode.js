@@ -5,7 +5,7 @@ const geocode = (searchTerm, callback) => {
     "pk.eyJ1Ijoic2ltb25raW5nMSIsImEiOiJjanV2OHNicncwMnFhM3ptb3JwbHBnZTZnIn0.CXHGz8I-gEEN85r-wxVqIw";
   const url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${encodeURIComponent(
     searchTerm
-  )}.json?access_token=${apiToken}`;
+  )}.json?access_token=${apiToken}&limit=1`;
 
   request.get({ url, json: true }, (error, response) => {
     if (error) {
