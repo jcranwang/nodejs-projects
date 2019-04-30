@@ -1,7 +1,8 @@
 const mongoose = require("mongoose");
 const validator = require("validator");
+const bcrypt = require("bcryptjs");
 
-const Users = mongoose.model("Users", {
+const userSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
@@ -12,7 +13,7 @@ const Users = mongoose.model("Users", {
     required: true,
     trim: true,
     lowercase: true,
-    validate(value){
+    validate(value) {
       if (!validator.isEmail(value)) {
         throw new Error("Please enter an valid email");
       }
@@ -23,9 +24,11 @@ const Users = mongoose.model("Users", {
     required: true,
     minlength: 6,
     trim: true,
-    validate(value){
+    validate(value) {
       if (value.toLowerCase().includes("password")) {
-        throw new Error("Please enter a password that does not contain the word \"password\"");
+        throw new Error(
+          'Please enter a password that does not contain the word "password"'
+        );
       }
     }
   },
@@ -39,5 +42,15 @@ const Users = mongoose.model("Users", {
     }
   }
 });
+
+userSchema.pre("save", async function(next) {
+  const currentUser = this;
+  if (currentUser.isModified("password")) {
+    currentUser.password = await bcrypt.hash(currentUser.password, 8);
+  }
+  next();
+});
+
+const Users = mongoose.model("Users", userSchema);
 
 module.exports = Users;
