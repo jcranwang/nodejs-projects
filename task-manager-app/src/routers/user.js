@@ -2,6 +2,16 @@ const express = require("express");
 const Users = require("../models/users");
 const userRouter = new express.Router();
 
+//Login route
+userRouter.post("/users/login", async(req, res) => {
+  try {
+    const user = await Users.findByEmailAndPassword(req.body.email, req.body.password);
+    res.status(200).send(user);
+  } catch (e) {
+    res.status(400).send(e);
+  }
+});
+
 // Creation endpoint
 userRouter.post("/users", async (req, res) => {
   try {
@@ -48,13 +58,12 @@ userRouter.patch("/users/:id", async (req, res) => {
     }
 
     const _id = req.params.id;
-    const user = await Users.findByIdAndUpdate(_id, req.body, {
-      new: true,
-      runValidators: true
-    });
+    const user = await Users.findById(_id);
     if (!user) {
       return res.status(404).send("Error: Cannot find the user");
     }
+    updateKeys.forEach((updateKey) => user[updateKey] = req.body[updateKey]);
+    await user.save();
     res.status(200).send(user);
   } catch (e) {
     res.status(400).send(e);

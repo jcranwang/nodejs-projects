@@ -10,6 +10,7 @@ const userSchema = new mongoose.Schema({
   },
   email: {
     type: String,
+    unique: true,
     required: true,
     trim: true,
     lowercase: true,
@@ -42,6 +43,18 @@ const userSchema = new mongoose.Schema({
     }
   }
 });
+
+userSchema.statics.findByEmailAndPassword = async (email, password) => {
+  const user = await Users.findOne({ email });
+  if (!user) {
+    throw new Error("Please provide correct email/password");
+  }
+  const isValid = await bcrypt.compare(password, user.password);
+  if (!isValid) {
+    throw new Error("Please provide correct email/password");
+  }
+  return user;
+};
 
 userSchema.pre("save", async function(next) {
   const currentUser = this;
