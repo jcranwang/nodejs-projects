@@ -1,36 +1,37 @@
 const express = require("express");
 const Users = require("../models/users");
+const auth = require("../middleware/auth");
 const userRouter = new express.Router();
 
 //Login route
-userRouter.post("/users/login", async(req, res) => {
+userRouter.post("/users/login", async (req, res) => {
   try {
-    const user = await Users.findByEmailAndPassword(req.body.email, req.body.password);
-    res.status(200).send(user);
+    const user = await Users.findByEmailAndPassword(
+      req.body.email,
+      req.body.password
+    );
+    const token = await user.createAuthToken();
+    res.status(200).send({ user: user, token: token });
   } catch (e) {
     res.status(400).send(e);
   }
 });
 
-// Creation endpoint
+// Creation endpoint (Sign up)
 userRouter.post("/users", async (req, res) => {
   try {
-    const newUser = new Users(req.body);
-    const user = await newUser.save();
-    res.status(201).send(user);
+    const user = new Users(req.body);
+    await user.save();
+    const token = await user.createAuthToken();
+    res.status(201).send({ user: user, token: token });
   } catch (e) {
     res.status(400).send(e);
   }
 });
 
 // Read endpoints
-userRouter.get("/users", async (req, res) => {
-  try {
-    const users = await Users.find({});
-    res.status(200).send(users);
-  } catch (e) {
-    res.status(500).send(e);
-  }
+userRouter.get("/users/me", auth, async(req, res) => {
+  res.status(200).send(req.user);
 });
 
 userRouter.get("/users/:id", async (req, res) => {
@@ -62,7 +63,7 @@ userRouter.patch("/users/:id", async (req, res) => {
     if (!user) {
       return res.status(404).send("Error: Cannot find the user");
     }
-    updateKeys.forEach((updateKey) => user[updateKey] = req.body[updateKey]);
+    updateKeys.forEach(updateKey => (user[updateKey] = req.body[updateKey]));
     await user.save();
     res.status(200).send(user);
   } catch (e) {
