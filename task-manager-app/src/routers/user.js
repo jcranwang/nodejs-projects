@@ -3,7 +3,7 @@ const Users = require("../models/users");
 const auth = require("../middleware/auth");
 const userRouter = new express.Router();
 
-//Login route
+//Login endpoint
 userRouter.post("/users/login", async (req, res) => {
   try {
     const user = await Users.findByEmailAndPassword(
@@ -14,6 +14,29 @@ userRouter.post("/users/login", async (req, res) => {
     res.status(200).send({ user: user, token: token });
   } catch (e) {
     res.status(400).send(e);
+  }
+});
+
+// Log out endpoints
+userRouter.post("/users/logout", auth, async (req, res) => {
+  try {
+    const user = req.user;
+    user.tokens = user.tokens.filter(token => token.token !== req.token);
+    await user.save();
+    res.status(200).send();
+  } catch (e) {
+    res.status(500).send(e);
+  }
+});
+
+userRouter.post("/users/logoutall", auth, async (req, res) => {
+  try {
+    const user = req.user;
+    user.tokens = [];
+    await user.save();
+    res.status(200).send();
+  } catch (e) {
+    res.status(500).send(e);
   }
 });
 
@@ -30,24 +53,12 @@ userRouter.post("/users", async (req, res) => {
 });
 
 // Read endpoints
-userRouter.get("/users/me", auth, async(req, res) => {
+userRouter.get("/users/me", auth, async (req, res) => {
   res.status(200).send(req.user);
 });
 
-userRouter.get("/users/:id", async (req, res) => {
-  try {
-    const user = await Users.findById(req.params.id);
-    if (!user) {
-      return res.status(404).send("Sorry, user not found");
-    }
-    res.status(200).send(user);
-  } catch (e) {
-    res.status(500).send(e);
-  }
-});
-
 // Update endpoint
-userRouter.patch("/users/:id", async (req, res) => {
+userRouter.patch("/users/me", auth, async (req, res) => {
   try {
     const updateKeys = Object.keys(req.body);
     const allowKeys = ["name", "email", "password", "age"];
@@ -58,11 +69,7 @@ userRouter.patch("/users/:id", async (req, res) => {
       return res.status(400).send("Error: contain invalid update information");
     }
 
-    const _id = req.params.id;
-    const user = await Users.findById(_id);
-    if (!user) {
-      return res.status(404).send("Error: Cannot find the user");
-    }
+    const user = req.user;
     updateKeys.forEach(updateKey => (user[updateKey] = req.body[updateKey]));
     await user.save();
     res.status(200).send(user);
@@ -72,13 +79,10 @@ userRouter.patch("/users/:id", async (req, res) => {
 });
 
 // Delete endpoint
-userRouter.delete("/users/:id", async (req, res) => {
+userRouter.delete("/users/me", auth, async (req, res) => {
   try {
-    const _id = req.params.id;
-    const user = await Users.findByIdAndDelete(_id);
-    if (!user) {
-      return res.status(404).send("Error: user not found");
-    }
+    const user = req.user;
+    await user.remove();
     res.status(200).send(user);
   } catch (e) {
     res.status(500).send(e);
