@@ -19,9 +19,29 @@ taskRouter.post("/tasks", auth, async (req, res) => {
 
 // Read endpoints
 taskRouter.get("/tasks", auth, async (req, res) => {
+  const match = {};
+  const sort = {};
+  if (req.query.completed) {
+    match.completed = req.query.completed === "true";
+  }
+
+  if (req.query.sortBy) {
+    const sortInfo = req.query.sortBy.split(":");
+    sort[sortInfo[0]] = sortInfo[1] === "desc" ? -1 : 1;
+  }
   try {
     const user = req.user;
-    await user.populate("tasks").execPopulate();
+    await user
+      .populate({
+        path: "tasks",
+        match,
+        options: {
+          limit: parseInt(req.query.limit),
+          skip: parseInt(req.query.skip),
+          sort
+        }
+      })
+      .execPopulate();
     res.status(200).send(user.tasks);
   } catch (e) {
     res.status(500).send(e);
