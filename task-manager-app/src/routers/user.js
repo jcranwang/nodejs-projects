@@ -3,6 +3,7 @@ const Users = require("../models/users");
 const auth = require("../middleware/auth");
 const multer = require("multer");
 const sharp = require("sharp");
+const { welcomeMail, cancelMail } = require("../email/account");
 const userRouter = new express.Router();
 
 //Login endpoint
@@ -47,6 +48,7 @@ userRouter.post("/users", async (req, res) => {
   try {
     const user = new Users(req.body);
     await user.save();
+    welcomeMail(user.name, user.email);
     const token = await user.createAuthToken();
     res.status(201).send({ user: user, token: token });
   } catch (e) {
@@ -85,6 +87,7 @@ userRouter.delete("/users/me", auth, async (req, res) => {
   try {
     const user = req.user;
     await user.remove();
+    cancelMail(user.name, user.email);
     res.status(200).send(user);
   } catch (e) {
     res.status(500).send(e);
